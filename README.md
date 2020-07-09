@@ -12,23 +12,26 @@ TODO:
 * Symptom tracking (eg coughing, stomach aches)/ Generic how do you feel 1-5
 
 ## Setup:
-This app uses Express.js, and has other package dependencies listed in package.json.
-
-Environment variables are listed in .env.tpl, and are required for the proper functioning of the app.
+This app uses Express.js with auth0 used to provided authentication for all routes where a user can add information to the database. 
+It requires an auth0 account, and a mongodb instance *somewhere* - the server must be able to interact with it, but it could be locally hosted
 
 ## Usage Guide for adding participants and sending calls:
 1. Visit the Temperature Monitoring Dashboard (currently https://tufts-covid.herokuapp.com/)
 
-2. Select a .csv file. It should look like this:
+2. Log in using an auth0 users' email and password.
+
+3. Select a .csv file. It should look like this:
 
 ![CSV](https://i.imgur.com/zi8kig2.png)
 
-3. Click upload file. This should bring you to a different page, saying that the CSV was successfully parsed.
+4. Click upload file. This should bring you to a different page, saying that the CSV was successfully parsed.
 
-4. Back on the dashboard, click Make Calls. This will use twilio to phone every number uploaded from the csv.
+5. Back on the dashboard, click Make Calls. This will use twilio to phone every number uploaded from the csv.
 
 ## Data Exportation:
-Thanks to auth0, it is possible to export files using certain protected routes.
+Thanks to auth0, it is possible to export files using certain protected routes, such as /mongo/participantData.csv.
+This does require mongodb community drivers to be installed. Because of this, it may not work on all servers.  
+To remedy this, I will provide shell scripts in a seperate repo for the purpose of data collection.
 
 ## APIs exposed:
 
