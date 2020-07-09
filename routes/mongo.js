@@ -10,25 +10,11 @@ var secured = require('../middleware/secured');
 Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
-router.post('/updateTemp', async (req, res) => {
+router.post('/updateTemp', twilio.webhook(), async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
     try {
-        const twilioSignature = req.headers['x-twilio-signature'];
-        const params = req.body;
-        const url = 'https://your-webhook-endpoint.io';
-      
-        const requestIsValid = twilio.validateRequest(
-          process.env.TWILIO_AUTH,
-          twilioSignature,
-          url,
-          params
-        );
-      
-        if (!requestIsValid) {
-          return res.status(401).send('Unauthorized');
-        }
         if (temp !== temp) {
             throw new Error('Invalid temperature!');
         } else if (temp > 900) {
@@ -59,7 +45,7 @@ router.post('/updateTemp', async (req, res) => {
 Exposed to Twilio
 - TWILIO post request webhook must have hasThermo and phone defined as form-url-encoded http params
 */
-router.post('/firstCallNoThermo', async (req, res, next) => {
+router.post('/firstCallNoThermo', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     const thermoString = req.body.hasThermo
@@ -68,20 +54,6 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
         hasThermo = true;
     }
     try {
-        const twilioSignature = req.headers['x-twilio-signature'];
-        const params = req.body;
-        const url = 'https://your-webhook-endpoint.io';
-      
-        const requestIsValid = twilio.validateRequest(
-          process.env.TWILIO_AUTH,
-          twilioSignature,
-          url,
-          params
-        );
-      
-        if (!requestIsValid) {
-          return res.status(401).send('Unauthorized');
-        }
         let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "no-thermo",
         {
@@ -95,7 +67,7 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
     res.send('User Answered Call')
 });
 
-router.post('/firstCallAnswered', async (req, res, next) => {
+router.post('/firstCallAnswered', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     let phone = req.body.phone
     phone = '+1' + phone.replace(/[^\d+]|_|(\+1)/g, "")
@@ -110,20 +82,6 @@ router.post('/firstCallAnswered', async (req, res, next) => {
         prefersCall = true;
     }
     try {
-        const twilioSignature = req.headers['x-twilio-signature'];
-        const params = req.body;
-        const url = 'https://your-webhook-endpoint.io';
-      
-        const requestIsValid = twilio.validateRequest(
-          process.env.TWILIO_AUTH,
-          twilioSignature,
-          url,
-          params
-        );
-      
-        if (!requestIsValid) {
-          return res.status(401).send('Unauthorized');
-        }
         let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "participants",
         {
@@ -140,24 +98,10 @@ router.post('/firstCallAnswered', async (req, res, next) => {
 
 // The next 2 methods are exposed to Twilio FirstCall flow, for people that
 // need to be contacted by humans
-router.post('/firstCallNoAnswer', async (req, res, next) => {
+router.post('/firstCallNoAnswer', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
-        const twilioSignature = req.headers['x-twilio-signature'];
-        const params = req.body;
-        const url = 'https://your-webhook-endpoint.io';
-      
-        const requestIsValid = twilio.validateRequest(
-          process.env.TWILIO_AUTH,
-          twilioSignature,
-          url,
-          params
-        );
-      
-        if (!requestIsValid) {
-          return res.status(401).send('Unauthorized');
-        }
         let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "no-response",
         {
@@ -170,24 +114,10 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
     res.send('User did not answer call')
 });
 
-router.post('/moreInfo', async (req, res, next) => {
+router.post('/moreInfo', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
-        const twilioSignature = req.headers['x-twilio-signature'];
-        const params = req.body;
-        const url = 'https://your-webhook-endpoint.io';
-      
-        const requestIsValid = twilio.validateRequest(
-          process.env.TWILIO_AUTH,
-          twilioSignature,
-          url,
-          params
-        );
-      
-        if (!requestIsValid) {
-          return res.status(401).send('Unauthorized');
-        }
         let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "more-info",
         {
