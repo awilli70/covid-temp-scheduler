@@ -1,4 +1,7 @@
 var express = require('express');
+var util = require('util');
+var url = require('url');
+var querystring = require('querystring');
 var router = express.Router();
 var path = require('path')
 var passport = require('passport')
@@ -18,7 +21,7 @@ router.get('/', passport.authenticate('auth0', {
 router.get('/callback', function (req, res, next) {
   passport.authenticate('auth0', function (err, user, info) {
     if (err) { return next(err); }
-    if (!user) { return res.redirect('/login'); }
+    if (!user) { return res.redirect('/'); }
     req.logIn(user, function (err) {
       if (err) { return next(err); }
       const returnTo = req.session.returnTo;
@@ -28,24 +31,28 @@ router.get('/callback', function (req, res, next) {
   })(req, res, next);
 });
 
-router.get('/logout', (req, res) => {
-  req.logout();
+router.get('/logout', secured(), (req, res) => {
+  try {
+      req.logOut();
 
-  var returnTo = req.protocol + '://' + req.hostname;
-  var port = req.connection.localPort;
-  if (port !== undefined && port !== 80 && port !== 443) {
-    returnTo += ':' + port;
+    var returnTo = req.protocol + '://' + req.hostname;
+    var port = req.connection.localPort;
+    if (port !== undefined && port !== 80 && port !== 443) {
+      returnTo += ':' + port;
+    }
+    var logoutURL = new url.URL(
+      util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
+    );
+    var searchString = querystring.stringify({
+      client_id: process.env.AUTH0_CLIENT_ID,
+      returnTo: returnTo
+    });
+    logoutURL.search = searchString;
+    res.redirect(logoutURL);
+  } catch (e) {
+    console.log(e)
+    res.send(e)
   }
-  var logoutURL = new url.URL(
-    util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
-  );
-  var searchString = querystring.stringify({
-    client_id: process.env.AUTH0_CLIENT_ID,
-    returnTo: returnTo
-  });
-  logoutURL.search = searchString;
-
-  res.redirect(logoutURL);
 });
 
 router.get('/controls', secured(), async (req, res, next) =>{

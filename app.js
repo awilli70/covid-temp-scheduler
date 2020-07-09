@@ -32,10 +32,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public/ingest')));
 
 var sess = {
-  secret: 'CHANGE THIS TO A RANDOM SECRET',
+  secret: 'rgoihawr;ohqwerfo;ih',
   cookie: {},
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 };
 
 if (process.env.ENV === 'production') {
