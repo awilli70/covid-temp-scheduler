@@ -1,9 +1,10 @@
 require('dotenv').config();
-var express = require('express');
-var router = express.Router();
-var twilio = require('twilio')
+const express = require('express');
+const router = express.Router();
+const twilio = require('twilio')
 const moment = require('moment');
-
+const { execSync } = require('child_process')
+var secured = require('../middleware/secured');
 
 /*
 Exposed to Twilio
@@ -128,6 +129,21 @@ router.post('/moreInfo', twilio.webhook(), async (req, res, next) => {
     }
     res.send('User did not answer call')
 });
+
+/*
+ * Routes to display csv - these utilise child-process to execute shell
+ * scripts
+ */
+router.get('/participantData.csv', secured(), async (req, res, next) => {
+    try {
+        let output = execSync(`mongoexport --uri=${process.env.DBURI} -c=${process.env.DATA_COLLECTION} --type="csv" -f="phone,time,temp"`)
+        res.send(output)
+    } catch (e) {
+        console.log(e)
+        res.status(500).send({'message': e})
+    }
+})
+
 
 // Helper: Inserts one user into the Mongo Database
 async function insertSingleUser(client, database, collection, post) {

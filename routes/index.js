@@ -1,18 +1,58 @@
 var express = require('express');
 var router = express.Router();
 var path = require('path')
-
+var passport = require('passport')
 const multer = require('multer');
 const csv = require('fast-csv');
 const fs = require('fs');
 // handler to work with multi-part form data i.e. files
 const upload = multer({ dest: 'tmp/csv/' });
+var secured = require('../middleware/secured');
 
-router.get('/', function(req, res, next) {
-  res.sendFile(path.resolve('/public/index.html'))
+router.get('/', passport.authenticate('auth0', {
+  scope: 'openid email profile'
+}), function (req, res) {
+  res.redirect('/controls');
 });
 
-router.post('/ingest/csvFile', upload.single('file'), async (req, res, next) => {
+router.get('/callback', function (req, res, next) {
+  passport.authenticate('auth0', function (err, user, info) {
+    if (err) { return next(err); }
+    if (!user) { return res.redirect('/login'); }
+    req.logIn(user, function (err) {
+      if (err) { return next(err); }
+      const returnTo = req.session.returnTo;
+      delete req.session.returnTo;
+      res.redirect(returnTo || '/controls');
+    });
+  })(req, res, next);
+});
+
+router.get('/logout', (req, res) => {
+  req.logout();
+
+  var returnTo = req.protocol + '://' + req.hostname;
+  var port = req.connection.localPort;
+  if (port !== undefined && port !== 80 && port !== 443) {
+    returnTo += ':' + port;
+  }
+  var logoutURL = new url.URL(
+    util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
+  );
+  var searchString = querystring.stringify({
+    client_id: process.env.AUTH0_CLIENT_ID,
+    returnTo: returnTo
+  });
+  logoutURL.search = searchString;
+
+  res.redirect(logoutURL);
+});
+
+router.get('/controls', secured(), async (req, res, next) =>{
+  res.sendFile(path.resolve('./public/controls.html'));
+});
+
+router.post('/ingest/csvFile', secured(), upload.single('file'), async (req, res, next) => {
     const filePath = req.file.path;
     let results = [];
     fs.createReadStream(filePath)

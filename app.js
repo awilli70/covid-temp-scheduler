@@ -1,4 +1,5 @@
 var createError = require('http-errors');
+const helmet = require('helmet')
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -6,6 +7,10 @@ var bodyParser = require('body-parser');
 const cors = require('cors');
 var CronJob = require('cron').CronJob;
 var { checkIn } = require('./cronHelpers');
+var session = require('express-session');
+
+var passport = require('passport');
+var Auth0Strategy = require('passport-auth0');
 
 const MongoClient = require('mongodb').MongoClient;
 const uri = process.env.DBSTRING;
@@ -17,6 +22,7 @@ var mongoRouter = require('./routes/mongo');
 require('dotenv').config();
 
 var app = express();
+app.use(helmet());
 // perform actions on the collection object
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -24,6 +30,49 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'public/ingest')));
+
+var sess = {
+  secret: 'CHANGE THIS TO A RANDOM SECRET',
+  cookie: {},
+  resave: false,
+  saveUninitialized: true
+};
+
+if (process.env.ENV === 'production') {
+  // Use secure cookies in production (requires SSL/TLS)
+  sess.cookie.secure = true;
+  app.set('trust proxy', 1);
+}
+app.use(session(sess));
+
+var strategy = new Auth0Strategy(
+  {
+    domain: process.env.AUTH0_DOMAIN,
+    clientID: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    callbackURL:
+      process.env.AUTH0_CALLBACK_URL || 'http://localhost:3000/callback'
+  },
+  function (accessToken, refreshToken, extraParams, profile, done) {
+    // accessToken is the token to call Auth0 API (not needed in the most cases)
+    // extraParams.id_token has the JSON Web Token
+    // profile has all the information from the user
+    return done(null, profile);
+  }
+);
+
+passport.serializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+  done(null, user);
+});
+
+passport.use(strategy);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 let corsRegexString = process.env.CORS_REGEX || 'localhost';
 

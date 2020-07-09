@@ -6,9 +6,10 @@ const authToken = process.env.TWILIO_AUTH;
 const client = require('twilio')(accountSid, authToken);
 var { checkIn } = require('../cronHelpers');
 var path = require('path');
+var secured = require('../middleware/secured');
 
 
-router.get('/firstCall', async (req, res) => {
+router.get('/firstCall', secured(), async (req, res) => {
     dbclient = req.client;
     const flow = process.env.TWILIO_FIRST_CALL_FLOW
     const phoneNums = await readCollection(dbclient, process.env.DB, process.env.INGEST_COLLECTION)
