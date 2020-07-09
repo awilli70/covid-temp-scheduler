@@ -28,11 +28,7 @@ Environment variables are listed in .env.tpl, and are required for the proper fu
 4. Back on the dashboard, click Make Calls. This will use twilio to phone every number uploaded from the csv.
 
 ## Data Exportation:
-Because this app needs to be open to the web for twilio, there are no routes that will respond with data from the database.
-
-I will include several Bash scripts that will save the data to a .csv file using mongoexport.  
-Note that this requires the computer executing these commands to have mongo installed.  
-Recommended use is setting up a cron task to run these scripts once a week.  
+Thanks to auth0, it is possible to export files using certain protected routes.
 
 ## APIs exposed:
 
