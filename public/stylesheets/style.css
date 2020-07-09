@@ -21,7 +21,7 @@ label {
   margin: .4rem 0;
 }
 
-input[type=submit] {
+input[type=submit], button {
   background-color: #3E8EDE;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
   border: none;
