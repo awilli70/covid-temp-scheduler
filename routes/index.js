@@ -62,35 +62,48 @@ router.get('/controls', secured(), async (req, res, next) =>{
 router.post('/ingest/csvFile', secured(), upload.single('file'), async (req, res, next) => {
     const filePath = req.file.path;
     let results = [];
-    fs.createReadStream(filePath)
-    .pipe(csv.parse({ headers: ['id', 'phone'], renameHeaders: true}))
-    .on('error', error => console.error(error))
-    .on('data', row => {
-      if(row.id !== '' && row.phone !== '') {
-        row.phone = '+1' + row.phone.replace(/[^\d+]|_|(\+1)/g, "")
-        results.push(row)
-      }
-    })
-    .on('end', async rowCount => {
-      console.log(`Parsed ${rowCount} rows`);
-      // delete temporary file stored in tmp/csv
-      fs.unlinkSync(filePath);
-      for (let user of results) {
-        let phone = user.phone
-        let id = user.id
-        let duplicate = await req.client.db(process.env.DB).collection(process.env.INGEST_COLLECTION)
-                                .findOne({'phone': phone})
-        if (duplicate) {
-          req.client.db(process.env.DB).collection(process.env.DUPLICATE_COLLECTION)
-            .insertOne({'phone': duplicate.phone, 'id': duplicate.id})
+    try {
+      fs.createReadStream(filePath)
+      .pipe(csv.parse({ headers: ['id', 'phone'], renameHeaders: true}))
+      .on('error', error => {
+        console.log(error);
+        res.sendFile(path.resolve('public/ingest/failed.html'));
+        return;
+      })
+      .on('data', row => {
+        if(row.id !== '' && row.phone !== '') {
+          row.phone = row.phone.replace(/[^\d+]|_|(\+1)/g, "")
+          if (parseInt(row.phone) < 1000000000) {
+            res.sendFile(path.resolve('public/ingest/failed.html'));
+            return;
+          }
+          row.phone = '+1' + row.phone
+          results.push(row)
         }
-        const result = await req.client.db(process.env.DB).collection(process.env.INGEST_COLLECTION)
-                                       .updateOne({'phone': phone}, 
-                                                  {$set: {'phone': phone, 'id': id}}, 
-                                                  {upsert: true});
-      }
-      res.sendFile(path.resolve('public/ingest/csvFile.html'))
-    });
+      })
+      .on('end', async rowCount => {
+        console.log(`Parsed ${rowCount} rows`);
+        // delete temporary file stored in tmp/csv
+        fs.unlinkSync(filePath);
+        for (let user of results) {
+          let phone = user.phone
+          let id = user.id
+          let duplicate = await req.client.db(process.env.DB).collection(process.env.INGEST_COLLECTION)
+                                  .findOne({'phone': phone})
+          if (duplicate) {
+            req.client.db(process.env.DB).collection(process.env.DUPLICATE_COLLECTION)
+              .insertOne({'phone': duplicate.phone, 'id': duplicate.id})
+          }
+          const result = await req.client.db(process.env.DB).collection(process.env.INGEST_COLLECTION)
+                                        .updateOne({'phone': phone}, 
+                                                    {$set: {'phone': phone, 'id': id}}, 
+                                                    {upsert: true});
+        }
+        res.sendFile(path.resolve('public/ingest/csvFile.html'))
+      });
+  } catch (e) {
+    res.status(500).send({error: e})
+  }
 });
 
 module.exports = router;
