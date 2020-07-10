@@ -10,7 +10,7 @@ var secured = require('../middleware/secured');
 Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
-router.post('/updateTemp', async (req, res) => {
+router.post('/updateTemp', twilio.webhook({protocol: 'https'}), async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
@@ -45,7 +45,7 @@ router.post('/updateTemp', async (req, res) => {
 Exposed to Twilio
 - TWILIO post request webhook must have hasThermo and phone defined as form-url-encoded http params
 */
-router.post('/firstCallNoThermo', async (req, res, next) => {
+router.post('/firstCallNoThermo', twilio.webhook({protocol: 'https'}), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     const thermoString = req.body.hasThermo
@@ -67,7 +67,7 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
     res.send('User Answered Call')
 });
 
-router.post('/firstCallAnswered', async (req, res, next) => {
+router.post('/firstCallAnswered', twilio.webhook({protocol: 'https'}), async (req, res, next) => {
     client = req.client;
     let phone = req.body.phone
     phone = '+1' + phone.replace(/[^\d+]|_|(\+1)/g, "")
@@ -98,7 +98,7 @@ router.post('/firstCallAnswered', async (req, res, next) => {
 
 // The next 2 methods are exposed to Twilio FirstCall flow, for people that
 // need to be contacted by humans
-router.post('/firstCallNoAnswer', async (req, res, next) => {
+router.post('/firstCallNoAnswer', twilio.webhook({protocol: 'https'}), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
@@ -114,7 +114,7 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
     res.send('User did not answer call')
 });
 
-router.post('/moreInfo', async (req, res, next) => {
+router.post('/moreInfo', twilio.webhook({protocol: 'https'}), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {

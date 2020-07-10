@@ -2,7 +2,7 @@ require('dotenv').config();
 var express = require('express');
 var router = express.Router();
 const accountSid = process.env.TWILIO_AC;
-const authToken = process.env.TWILIO_AUTH;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 var { checkIn } = require('../cronHelpers');
 var path = require('path');
