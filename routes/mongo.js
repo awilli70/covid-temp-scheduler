@@ -13,7 +13,7 @@ const accountSid = process.env.TWILIO_AC;
 Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
-router.post('/updateTemp', twilio.webhook({protocol: 'https'}), async (req, res) => {
+router.post('/updateTemp/', twilio.webhook({protocol: 'https'}), async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
