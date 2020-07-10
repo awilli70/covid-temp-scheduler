@@ -6,6 +6,8 @@ const moment = require('moment');
 const { execSync } = require('child_process')
 var secured = require('../middleware/secured');
 
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+
 /*
 Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
