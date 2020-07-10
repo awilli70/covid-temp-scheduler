@@ -90,10 +90,11 @@ router.post('/firstCallAnswered', async (req, res, next) => {
                 "prefersCall": prefersCall
             }
         );
+        res.send('User Answered Call')
     } catch (e) {
         next(e)
     }
-    res.send('User Answered Call')
+    
 });
 
 // The next 2 methods are exposed to Twilio FirstCall flow, for people that
