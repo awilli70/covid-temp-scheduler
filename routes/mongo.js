@@ -7,6 +7,7 @@ const { execSync } = require('child_process')
 var secured = require('../middleware/secured');
 
 const authToken = process.env.TWILIO_AUTH_TOKEN;
+const accountSid = process.env.TWILIO_AC;
 
 /*
 Exposed to Twilio
