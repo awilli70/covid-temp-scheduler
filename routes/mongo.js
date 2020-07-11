@@ -61,10 +61,10 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
                 "hasThermo": hasThermo
             }
         );
+        res.send('User Answered Call')
     } catch (e) {
         next(e)
     }
-    res.send('User Answered Call')
 });
 
 router.post('/firstCallAnswered', async (req, res, next) => {
@@ -109,10 +109,10 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
                 "phone": phone
             }
         );
+        res.send('User did not answer call')
     } catch (e) {
         next(e)
     }
-    res.send('User did not answer call')
 });
 
 router.post('/moreInfo', async (req, res, next) => {
@@ -125,10 +125,10 @@ router.post('/moreInfo', async (req, res, next) => {
                 "phone": phone
             }
         );
+        res.send('User requested more info')
     } catch (e) {
         next(e)
     }
-    res.send('User did not answer call')
 });
 
 /*
