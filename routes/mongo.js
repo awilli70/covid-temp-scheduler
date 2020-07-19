@@ -28,7 +28,7 @@ router.post('/updateTemp', async (req, res) => {
         let participant = await dbclient.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
         
         const tempRecord = {
-            (participant.id),
+            participant.id,
             time,
             temp
         }
