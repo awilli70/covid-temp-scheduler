@@ -27,12 +27,13 @@ router.post('/updateTemp', async (req, res) => {
         const time = moment().format('MMMM Do YYYY, h:mm:ss a');
         let participant = await dbclient.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
         
-        const tempRecord = {
-            participant.id,
-            time,
-            temp
-        }
-        await client.db(process.env.DB).collection("participant-data").insertOne(tempRecord)
+        insertSingleUser(client, process.env.DB, process.env.USER_COLLECTION, 
+            {
+                "id": participant.id,
+                "time": time,
+                "temp": temp
+            });
+
         res.status(200).send('Updated user record.');
     } catch (e) {
         if (e.message !== 'Invalid temperature!') {
