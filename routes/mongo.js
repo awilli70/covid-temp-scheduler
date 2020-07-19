@@ -92,7 +92,7 @@ router.post('/firstCallAnswered', async (req, res, next) => {
         }
         await insertSingleUser(client, process.env.DB, "participants",
         {
-                "phone": phone,
+                "phone": newPhone,
                 "hasThermo": hasThermo,
                 "prefersCall": prefersCall,
                 "id": id.id
