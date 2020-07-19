@@ -27,7 +27,7 @@ router.post('/updateTemp', async (req, res) => {
         const time = moment().format('MMMM Do YYYY, h:mm:ss a');
         let participant = await client.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
         
-        insertSingleUser(client, process.env.DB, process.env.USER_COLLECTION, 
+        insertSingleUser(client, process.env.DB, process.env.DATA_COLLECTION, 
             {
                 "id": participant.id,
                 "time": time,
