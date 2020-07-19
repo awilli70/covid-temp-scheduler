@@ -54,12 +54,13 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
         hasThermo = true;
     }
     try {
-        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOneAndDelete({phone: phone})
+        let id = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOne({phone: phone})
+        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "no-thermo",
         {
                 "phone": phone,
                 "hasThermo": hasThermo,
-                "id": removeNum.id
+                "id": id.id
             }
         );
         res.send('User Answered Call')
@@ -84,7 +85,8 @@ router.post('/firstCallAnswered', async (req, res, next) => {
         prefersCall = true;
     }
     try {
-        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOneAndDelete({phone: phone})
+        let id = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOne({phone: phone})
+        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         if (!newPhone) {
             newPhone = phone
         }
@@ -93,7 +95,7 @@ router.post('/firstCallAnswered', async (req, res, next) => {
                 "phone": phone,
                 "hasThermo": hasThermo,
                 "prefersCall": prefersCall,
-                "id": removeNum.id
+                "id": id.id
             }
         );
         res.send('User Answered Call')
@@ -109,11 +111,12 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
-        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOneAndDelete({phone: phone})
+        let id = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOne({phone: phone})
+        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "no-response",
         {
                 "phone": phone,
-                "id": removeNum.id
+                "id": id.id
             }
         );
         res.send('User did not answer call')
@@ -126,11 +129,12 @@ router.post('/moreInfo', async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
-        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOneAndDelete({phone: phone})
+        let id = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOne({phone: phone})
+        let removeNum = await dbclient.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
         await insertSingleUser(client, process.env.DB, "more-info",
         {
                 "phone": phone,
-                "id": removeNum.id
+                "id": id.id
             }
         );
         res.send('User requested more info')
