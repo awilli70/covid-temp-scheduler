@@ -14,7 +14,6 @@ router.post('/updateTemp', async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
-    let participant = await dbclient.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
     try {
         if (temp !== temp) {
             throw new Error('Invalid temperature!');
@@ -26,9 +25,10 @@ router.post('/updateTemp', async (req, res) => {
         }
 
         const time = moment().format('MMMM Do YYYY, h:mm:ss a');
+        let participant = await dbclient.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
         
         const tempRecord = {
-            participant.id,
+            (participant.id),
             time,
             temp
         }
