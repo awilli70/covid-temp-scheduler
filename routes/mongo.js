@@ -100,6 +100,7 @@ router.post('/firstCallAnswered', async (req, res, next) => {
         );
         res.send('User Answered Call')
     } catch (e) {
+        console.log(e)
         next(e)
     }
     
