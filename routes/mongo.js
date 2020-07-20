@@ -15,7 +15,7 @@ router.post('/updateTemp', async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
-    let taste = (parseInt(req.body.symptomOne) === 1 || regex.test(symptomOne));
+    let taste = (parseInt(req.body.symptomOne) === 1 || regex.test(req.body.symptomOne));
     let cough = (parseInt(req.body.symptomTwo) === 1 || regex.test(req.body.symptomTwo));
     let fever = (parseInt(req.body.symptomThree) === 1 || regex.test(req.body.symptomThree));
     let evacuation = (parseInt(req.body.symptomFour) === 1 || regex.test(req.body.symptomFour));
