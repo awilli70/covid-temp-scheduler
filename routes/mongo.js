@@ -14,10 +14,10 @@ router.post('/updateTemp', async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
-    let taste = (parseInt(req.body.symptomOne) === 1 || req.body.symptomOne.match(/\b\w*[Yy]\w*\b/gm));
-    let cough = (parseInt(req.body.symptomTwo) === 1 || req.body.symptomTwo.match(/\b\w*[Yy]\w*\b/gm));
-    let fever = (parseInt(req.body.symptomThree) === 1 || req.body.symptomThree.match(/\b\w*[Yy]\w*\b/gm));
-    let evacuation = (parseInt(req.body.symptomFour) === 1 || req.body.symptomFour.match(/\b\w*[Yy]\w*\b/gm));
+    let taste = (parseInt(req.body.symptomOne) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
+    let cough = (parseInt(req.body.symptomTwo) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
+    let fever = (parseInt(req.body.symptomThree) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
+    let evacuation = (parseInt(req.body.symptomFour) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
 
     try {
         const time = moment().format('MMMM Do YYYY, h:mm:ss a');
