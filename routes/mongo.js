@@ -11,13 +11,14 @@ Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
 router.post('/updateTemp', async (req, res) => {
+    regex = RegExp(/(Y|y)/gm)
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
-    let taste = (parseInt(req.body.symptomOne) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
-    let cough = (parseInt(req.body.symptomTwo) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
-    let fever = (parseInt(req.body.symptomThree) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
-    let evacuation = (parseInt(req.body.symptomFour) === 1 || (req.body.symptomOne.toLowerCase()).includes('y'));
+    let taste = (parseInt(req.body.symptomOne) === 1 || regex.test(symptomOne));
+    let cough = (parseInt(req.body.symptomTwo) === 1 || regex.test(req.body.symptomTwo));
+    let fever = (parseInt(req.body.symptomThree) === 1 || regex.test(req.body.symptomThree));
+    let evacuation = (parseInt(req.body.symptomFour) === 1 || regex.test(req.body.symptomFour));
 
     try {
         const time = moment().format('MMMM Do YYYY, h:mm:ss a');
