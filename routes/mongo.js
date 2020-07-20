@@ -149,6 +149,24 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
     }
 });
 
+router.post('/firstCallNonparticipant', async (req, res, next) => {
+    client = req.client;
+    const phone = req.body.phone
+    try {
+        let id = await client.db(process.env.DB).collection(process.env.INGEST_COLLECTION).findOne({phone: phone})
+        let removeNum = await client.db(process.env.DB).collection(process.env.INGEST_COLLECTION).deleteOne({phone: phone})
+        await insertSingleUser(client, process.env.DB, "not-participating",
+        {
+                "phone": phone,
+                "id": id.id
+            }
+        );
+        res.send('User does not want to participate')
+    } catch (e) {
+        next(e)
+    }
+});
+
 router.post('/moreInfo', async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
