@@ -173,7 +173,7 @@ router.post('/moreInfo', async (req, res, next) => {
  */
 router.get('/participantData.csv', secured(), async (req, res, next) => {
     try {
-        let output = execSync(`mongoexport --uri=${process.env.DBURI} -c=${process.env.DATA_COLLECTION} --type="csv" -f="phone,time,temp"`)
+        let output = execSync(`mongoexport --uri=${process.env.DBURI} -c=${process.env.DATA_COLLECTION} --type="csv" -f="id,time,temp,taste-smell,cough-ache,fever-chills,diarrhea-vomiting"`)
         res.send(output)
     } catch (e) {
         console.log(e)
