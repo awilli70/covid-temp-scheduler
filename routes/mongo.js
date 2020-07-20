@@ -14,6 +14,37 @@ router.post('/updateTemp', async (req, res) => {
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
+    let taste = (req.body.symptomOne === 1 || req.body.symptomOne.includes('y'));
+    let cough = (req.body.symptomTwo === 1 || req.body.symptomTwo.includes('y'));
+    let fever = (req.body.symptomThree === 1 || req.body.symptomThree.includes('y'));
+    let evacuation = (req.body.symptomFour === 1 || req.body.symptomFour.includes('y'));
+
+    try {
+        const time = moment().format('MMMM Do YYYY, h:mm:ss a');
+        let participant = await client.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
+        
+        insertSingleUser(client, process.env.DB, process.env.DATA_COLLECTION, 
+            {
+                "id": participant.id,
+                "time": time,
+                "temp": temp,
+                "taste-smell": taste,
+                "cough-ache": cough,
+                "fever-chills": fever,
+                "diarrhea-vomiting": evacuation
+            });
+
+        res.status(200).send('Updated user record.');
+    } catch (e) {
+        if (e.message !== 'Invalid temperature!') {
+            console.log(e)
+        }
+        res.status(500).send({'message': e});
+    }
+});
+
+router.post('/checkTemp/', async (req, res) => {
+    let temp = parseFloat(req.body.temp);
     try {
         if (temp !== temp) {
             throw new Error('Invalid temperature!');
@@ -23,18 +54,7 @@ router.post('/updateTemp', async (req, res) => {
         if (temp < 80 || temp > 120) {
             throw new Error('Invalid temperature!')
         }
-
-        const time = moment().format('MMMM Do YYYY, h:mm:ss a');
-        let participant = await client.db(process.env.DB).collection(process.env.USER_COLLECTION).findOne({phone: phone})
-        
-        insertSingleUser(client, process.env.DB, process.env.DATA_COLLECTION, 
-            {
-                "id": participant.id,
-                "time": time,
-                "temp": temp
-            });
-
-        res.status(200).send('Updated user record.');
+        res.status(200).send({temp: temp});
     } catch (e) {
         if (e.message !== 'Invalid temperature!') {
             console.log(e)
