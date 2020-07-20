@@ -11,7 +11,7 @@ Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
 router.post('/updateTemp', async (req, res) => {
-    regex = RegExp(/(Y|y)/gm)
+    regex = RegExp(/\b\w*[Yy]\w*\b/gm)
     client = req.client;
     const phone = req.body.phone;
     let temp = parseFloat(req.body.temp);
