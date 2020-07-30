@@ -13,9 +13,9 @@ const upload = multer({ dest: 'tmp/csv/' });
 var secured = require('../middleware/secured');
 
 router.get('/', passport.authenticate('auth0', {
-  scope: 'openid email profile'
+    scope: 'openid email profile'
 }), function (req, res) {
-  res.redirect('/controls');
+    res.redirect('/controls');
 });
 
 router.get('/callback', function (req, res, next) {
