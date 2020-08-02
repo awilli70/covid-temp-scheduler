@@ -21,7 +21,7 @@ function twilioValidation(req) {
 Exposed to Twilio
 - TWILIO post request webhook must have temp, phone defined as form-url-encoded http parameters
 */
-router.post('/updateTemp', async (req, res) => {
+router.post('/updateTemp', twilio.webhook(), async (req, res) => {
     regex = RegExp(/(y|Y)/)
     client = req.client;
     const phone = req.body.phone;
@@ -83,7 +83,7 @@ router.post('/checkTemp/', async (req, res) => {
 Exposed to Twilio
 - TWILIO post request webhook must have hasThermo and phone defined as form-url-encoded http params
 */
-router.post('/firstCallNoThermo', async (req, res, next) => {
+router.post('/firstCallNoThermo', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     const thermoString = req.body.hasThermo
@@ -107,7 +107,7 @@ router.post('/firstCallNoThermo', async (req, res, next) => {
     }
 });
 
-router.post('/firstCallAnswered', async (req, res, next) => {
+router.post('/firstCallAnswered', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     let phone = req.body.phone
     let newPhone = req.body.newPhone
@@ -146,7 +146,7 @@ router.post('/firstCallAnswered', async (req, res, next) => {
 
 // The next 2 methods are exposed to Twilio FirstCall flow, for people that
 // need to be contacted by humans
-router.post('/firstCallNoAnswer', async (req, res, next) => {
+router.post('/firstCallNoAnswer', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
@@ -164,7 +164,7 @@ router.post('/firstCallNoAnswer', async (req, res, next) => {
     }
 });
 
-router.post('/firstCallNonparticipant', async (req, res, next) => {
+router.post('/firstCallNonparticipant', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
@@ -182,7 +182,7 @@ router.post('/firstCallNonparticipant', async (req, res, next) => {
     }
 });
 
-router.post('/moreInfo', async (req, res, next) => {
+router.post('/moreInfo', twilio.webhook(), async (req, res, next) => {
     client = req.client;
     const phone = req.body.phone
     try {
