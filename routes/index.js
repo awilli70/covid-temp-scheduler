@@ -35,11 +35,7 @@ router.get('/logout', secured(), (req, res) => {
   try {
       req.logOut();
 
-    var returnTo = req.protocol + '://' + req.hostname;
-    var port = req.connection.localPort;
-    if (port !== undefined && port !== 80 && port !== 443) {
-      returnTo += ':' + port;
-    }
+    var returnTo = req.protocol + '://temperature.rugbrook.com';
     var logoutURL = new url.URL(
       util.format('https://%s/v2/logout', process.env.AUTH0_DOMAIN)
     );
