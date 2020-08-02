@@ -8,15 +8,12 @@ const { execSync } = require('child_process')
 var secured = require('../middleware/secured');
 
 function twilioValidation(req) {
-    const url = req.protocol + '://' + req.hostname + req.originalUrl;
+    const url = 'https://temperature.rugbrook.com' + req.originalUrl ;
     const signature = req.get('X-Twilio-Signature');
     const params = req.body
     const token = process.env.TWILIO_AUTH_TOKEN
     
-    console.log(url)	
-    console.log(token)
-    console.log(params)
-    
+    console.log(url)
     return twilio.validateRequest(token, signature, url, params);
 }
 
@@ -58,12 +55,12 @@ router.post('/updateTemp', async (req, res) => {
     }
 });
 
-router.post('/checkTemp/', twilio.webhook(),  async (req, res) => {
+router.post('/checkTemp/', async (req, res) => {
     let temp = parseFloat(req.body.temp);
 
-    //if (!twilioValidation(req)) {
-      //  return res.status(403).send();
-    //}
+    if (!twilioValidation(req)) {
+        return res.status(403).send();
+    }
     try {
         if (temp !== temp) {
             throw new Error('Invalid temperature!');
